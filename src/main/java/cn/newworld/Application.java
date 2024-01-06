@@ -5,6 +5,7 @@ import cn.newworld.command.CommandManager;
 import cn.newworld.command.executor.ExitCommand;
 import cn.newworld.command.executor.HelpCommand;
 import cn.newworld.command.executor.ListCommand;
+import cn.newworld.command.executor.ReloadCommand;
 import cn.newworld.controller.SocketConnectionHandler;
 import cn.newworld.file.ApplicationConfig;
 import cn.newworld.file.FileManager;
@@ -45,13 +46,15 @@ public class Application {
     public static void initResource(){
         FileManager.extractFile("application.properties");
         ApplicationConfig applicationConfig = ApplicationConfig.getInstance();
+        Logger.info("------------------------------------------------------------------");
         Logger.info(" ");
         Logger.info("系统："+ applicationConfig.getProperty("server-name"));
         Logger.info("版本："+ applicationConfig.getProperty("server-version"));
         Logger.info("语言："+ applicationConfig.getProperty("language"));
         Logger.info("开发者："+ applicationConfig.getProperty("author"));
-        Logger.info("网址："+ applicationConfig.getProperty("website"));
+        Logger.info("网站："+ applicationConfig.getProperty("website"));
         Logger.info(" ");
+        Logger.info("------------------------------------------------------------------");
         Logger.info("等待加载中...");
         try {
             Thread.sleep(4500);
@@ -86,7 +89,16 @@ public class Application {
         commandManager.registerCommandExecutor("exit",new ExitCommand());
         commandManager.registerCommandExecutor("help",new HelpCommand());
         commandManager.registerCommandExecutor("list",new ListCommand());
-        Logger.info("服务端默认命令全部注册成功！");
+        commandManager.registerCommandExecutor("reload",new ReloadCommand());
+        Logger.info("默认命令全部注册成功！");
+    }
+
+    /**
+     * 注册事件
+     */
+    public static void initEventExecutor(){
+
+        Logger.info("默认事件全部注册成功！");
     }
 
     public static void main(String[] args) {
@@ -100,12 +112,8 @@ public class Application {
         int port = Server.getServer().getPort();
         Logger.info("服务端即将开放端口 "+port+" 用于连接...");
 
-        Logger.info("[ 日志模块 ] 成功加载.");
-        Logger.info("[ 命令模块 ] 成功加载.");
-        Logger.info("[ 文件模块 ] 成功加载.");
-        Logger.info("[ 心跳模块 ] 未开发...");
-
         initCommand();
+        initEventExecutor();
 
 
 
@@ -134,13 +142,14 @@ public class Application {
                 }
 
 
-                if (shutdownRequested){
-                    Logger.info("[ 命令模块 ] 已经关闭");
+
+                if (shutdownRequested)
                     break;
-                }
 
             }
             // 释放资源，保存数据
+            Logger.info("[ 命令模块 ] 已经关闭.");
+            Logger.info("[ 日志模块 ] 已经关闭.");
             Logger.close();
             scanner.close();
 

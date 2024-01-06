@@ -33,7 +33,6 @@ public class Logger {
      * 关闭日志系统
      */
     public static void close(){
-        info("[ 日志模块 ] 已经关闭.");
         if (logWriter != null){
             logWriter.flush();
             logWriter.close();
