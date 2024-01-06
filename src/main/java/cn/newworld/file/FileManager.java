@@ -4,7 +4,7 @@
  */
 package cn.newworld.file;
 
-import cn.newworld.controller.AppInitializer;
+import cn.newworld.Application;
 import cn.newworld.util.Logger;
 
 import java.io.File;
@@ -64,7 +64,7 @@ public class FileManager {
         Path targetPath = jarFolderPath.resolve(resourceFile);
 
         if (!Files.exists(targetPath)) {
-            try (InputStream resourceStream = AppInitializer.class.getResourceAsStream(resourcePath)) {
+            try (InputStream resourceStream = Application.class.getResourceAsStream(resourcePath)) {
                 if (resourceStream != null) {
                     Files.copy(resourceStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 } else {
@@ -86,7 +86,7 @@ public class FileManager {
         String resourcePath = resourceDirectory + resourceFile;
         Path targetPath = jarFolderPath.resolve(resourceFile);
         if (!Files.exists(targetPath)) {
-            try (InputStream resourceStream = AppInitializer.class.getResourceAsStream(resourcePath)) {
+            try (InputStream resourceStream = Application.class.getResourceAsStream(resourcePath)) {
                 if (resourceStream != null) {
                     Files.copy(resourceStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 } else {

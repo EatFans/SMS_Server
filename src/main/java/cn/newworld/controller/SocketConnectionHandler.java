@@ -4,7 +4,7 @@
 package cn.newworld.controller;
 
 import cn.newworld.Application;
-import cn.newworld.model.Server;
+import cn.newworld.model.dao.Server;
 import cn.newworld.util.Logger;
 
 import java.io.IOException;

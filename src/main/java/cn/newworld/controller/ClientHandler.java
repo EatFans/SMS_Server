@@ -5,9 +5,8 @@
 package cn.newworld.controller;
 
 
-import cn.newworld.model.Server;
+import cn.newworld.model.dao.Server;
 import cn.newworld.util.Logger;
-import com.mysql.cj.log.Log;
 
 import java.io.*;
 import java.net.Socket;

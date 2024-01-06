@@ -1,5 +1,5 @@
 //
-package cn.newworld.model;
+package cn.newworld.model.entity;
 
 import cn.newworld.annotations.EventHandler;
 

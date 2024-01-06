@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-public class CommandProcessor implements Runnable {
+public class CommandProcessor{
     private final Map<String, CommandExecutor> commandExecutorMap;
     private DefaultCommandExecutor defaultCommandExecutor;
 
@@ -43,7 +43,6 @@ public class CommandProcessor implements Runnable {
      * 然后，获取字符串数组的第一位转化成小写存储为字符串，在已经注册的指令监听中寻找对应的监听，如果没用找到就使用默认监听
      * 最后再通过指令监听，在其中执行指令，并返回true，true标识指令已执行.
      */
-    @Override
     public void run(){
         Scanner scanner = new Scanner(System.in);
         while (!Application.isShutdownRequested()){

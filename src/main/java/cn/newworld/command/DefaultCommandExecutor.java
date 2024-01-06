@@ -1,7 +1,7 @@
 package cn.newworld.command;
 
 import cn.newworld.Application;
-import cn.newworld.model.Server;
+import cn.newworld.model.dao.Server;
 import cn.newworld.util.EncryptionUtils;
 import cn.newworld.util.Logger;
 

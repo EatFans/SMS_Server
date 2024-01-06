@@ -1,7 +1,7 @@
 /**
  * 这是一个用于储存服务器各种参数的数据模型，用于存放服务器端口、心跳间隔、最大连接等数据的数据模型类
  */
-package cn.newworld.model;
+package cn.newworld.model.dao;
 
 import cn.newworld.file.YamlConfiguration;
 import cn.newworld.util.Logger;
