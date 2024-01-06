@@ -2,6 +2,9 @@ package cn.newworld;
 
 import cn.newworld.command.CommandExecutor;
 import cn.newworld.command.CommandManager;
+import cn.newworld.command.executor.ExitCommand;
+import cn.newworld.command.executor.HelpCommand;
+import cn.newworld.command.executor.ListCommand;
 import cn.newworld.controller.SocketConnectionHandler;
 import cn.newworld.file.ApplicationConfig;
 import cn.newworld.file.FileManager;
@@ -68,29 +71,42 @@ public class Application {
     }
 
     /**
-     * 初始化对象、加载数据、注册命令、注册事件执行器
+     * 初始化对象、加载数据
      */
     public static void initData(){
         scanner = new Scanner(System.in);
         commandManager = new CommandManager();
         Server.getServer().load();
-
     }
 
+    /**
+     * 注册命令
+     */
+    public static void initCommand(){
+        commandManager.registerCommandExecutor("exit",new ExitCommand());
+        commandManager.registerCommandExecutor("help",new HelpCommand());
+        commandManager.registerCommandExecutor("list",new ListCommand());
+        Logger.info("服务端默认命令全部注册成功！");
+    }
 
     public static void main(String[] args) {
         // 初始化
         initDirection();
         Logger.init();
+        Runtime.getRuntime().addShutdownHook(new Thread(Logger::close)); // 注册自动关闭日志系统并保存日志信息
         initResource();
         initData();
-        Runtime.getRuntime().addShutdownHook(new Thread(Logger::close)); // 注册自动关闭日志系统并保存日志信息
+
+        int port = Server.getServer().getPort();
+        Logger.info("服务端即将开放端口 "+port+" 用于连接...");
+
         Logger.info("[ 日志模块 ] 成功加载.");
         Logger.info("[ 命令模块 ] 成功加载.");
         Logger.info("[ 文件模块 ] 成功加载.");
         Logger.info("[ 心跳模块 ] 未开发...");
-        int port = Server.getServer().getPort();
-        Logger.info("服务端即将开放端口 "+port+" 用于连接...");
+
+        initCommand();
+
 
 
         try {
@@ -111,16 +127,17 @@ public class Application {
                         getCommandExecutor().
                         getOrDefault(commandName,commandExecutorMap.get(commandName));
                 if (commandExecutor != null){
-                    boolean commandFlag = commandExecutor.onCommand(command);
-                    if (!commandFlag)
+                    if (!commandExecutor.onCommand(commandName,command))
                         Logger.warning("命令未执行成功！");
                 } else {
-                    Logger.error("未注册成功任何命令！");
+                    Logger.warning("未注册 "+ commandName+ " 命令! 请检查后重试！");
                 }
 
 
-                if (shutdownRequested)
+                if (shutdownRequested){
+                    Logger.info("[ 命令模块 ] 已经关闭");
                     break;
+                }
 
             }
             // 释放资源，保存数据

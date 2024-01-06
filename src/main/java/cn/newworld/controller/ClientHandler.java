@@ -12,13 +12,11 @@ import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable{
-    private String clientMessage;
     private Socket clientSocket;
     private boolean flag;
     public ClientHandler(Socket clientSocket){
         this.clientSocket = clientSocket;
         this.flag = true;
-        this.clientMessage = null;
     }
 
     /**
@@ -42,7 +40,6 @@ public class ClientHandler implements Runnable{
             InputStream inputStream = clientSocket.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-            Logger.info("正在验证客户端密钥中...");
 
             do {
                 Logger.info("密钥验证通过，已经成功连接...");

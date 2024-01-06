@@ -6,8 +6,8 @@
 package cn.newworld.event;
 
 public enum Event {
-    UserLoginInEvent("UserLoginInEvent");
-
+    UserLoginInEvent("UserLoginInEvent"),
+    UserRegistrationEvent("UserRegistrationEvent");
     private final String eventName;
     private Event(String EventName){
         this.eventName = EventName;
