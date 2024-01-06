@@ -4,6 +4,15 @@
 
 package cn.newworld.extensions;
 
-public class PluginLoader {
+public class PluginManager {
+
+    public PluginManager(){
+
+    }
+
+    public void loadPlugin(){
+
+
+    }
 
 }

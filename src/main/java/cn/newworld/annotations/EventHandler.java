@@ -1,6 +1,6 @@
 package cn.newworld.annotations;
 
-import cn.newworld.event.EventPriority;
+import cn.newworld.event.EventHandler.EventPriority;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

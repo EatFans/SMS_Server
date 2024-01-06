@@ -1,4 +1,4 @@
-package cn.newworld.event.Events;
+package cn.newworld.event.Events.server;
 
 import cn.newworld.event.Event;
 import cn.newworld.event.EventsManager;
