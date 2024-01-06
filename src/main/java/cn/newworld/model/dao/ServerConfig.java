@@ -6,21 +6,21 @@ package cn.newworld.model.dao;
 import cn.newworld.file.YamlConfiguration;
 import cn.newworld.util.Logger;
 
-public class Server {
+public class ServerConfig {
     private int port;
     private int connectionMax;
     private int heartbeatInterval;
     private int clientAmount;
     private int timeout;
-    private static Server instance;
+    private static ServerConfig instance;
 
     /**
      * 获取Server类的实例
      * @return 返回实例对象
      */
-    public static Server getServer(){
+    public static ServerConfig getInstance(){
         if (instance == null)
-            instance = new Server();
+            instance = new ServerConfig();
         return instance;
     }
 

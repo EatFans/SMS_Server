@@ -5,7 +5,7 @@
 package cn.newworld.controller;
 
 
-import cn.newworld.model.dao.Server;
+import cn.newworld.model.dao.ServerConfig;
 import cn.newworld.util.Logger;
 
 import java.io.*;
@@ -34,7 +34,7 @@ public class ClientHandler implements Runnable{
         // 客户端连接后的逻辑
         try{
             // 初始化心跳系统
-            Heartbeat heartbeat = new Heartbeat(clientSocket, Server.getServer().getHeartbeatInterval());
+            Heartbeat heartbeat = new Heartbeat(clientSocket, ServerConfig.getInstance().getHeartbeatInterval());
 
 
             InputStream inputStream = clientSocket.getInputStream();
@@ -54,7 +54,7 @@ public class ClientHandler implements Runnable{
         } finally {
             try {
                 Logger.info("客户端 " + clientSocket.getInetAddress() + " 已经断开连接...");
-                Server.getServer().reduceClientAmount(1);
+                ServerConfig.getInstance().reduceClientAmount(1);
                 clientSocket.close();
             } catch (IOException e){
                 Logger.warning(e.getMessage());

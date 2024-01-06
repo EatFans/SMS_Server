@@ -4,7 +4,7 @@
 package cn.newworld.controller;
 
 import cn.newworld.Application;
-import cn.newworld.model.dao.Server;
+import cn.newworld.model.dao.ServerConfig;
 import cn.newworld.util.Logger;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class SocketConnectionHandler implements Runnable {
     public SocketConnectionHandler(int port) throws IOException {
         // 创建服务器套接字
         this.serverSocket = new ServerSocket(port);
-        this.threadPool = Executors.newFixedThreadPool(Server.getServer().getConnectionMax());
+        this.threadPool = Executors.newFixedThreadPool(ServerConfig.getInstance().getConnectionMax());
         Logger.info("正在初始化网络连接...");
     }
 
@@ -38,15 +38,15 @@ public class SocketConnectionHandler implements Runnable {
     public void run() {
         try {
             Logger.info("服务器已开放端口: " + serverSocket.getLocalPort());
-            Logger.info("已经连接的客户端数量："+Server.getServer().getClientAmount());
+            Logger.info("已经连接的客户端数量："+ ServerConfig.getInstance().getClientAmount());
             serverSocket.setSoTimeout(5000); // 设置超时时间为5秒
             while (!Application.isShutdownRequested()) {
                 try {
                     Socket clientSocket = serverSocket.accept();
-                    Server.getServer().addClientAmount(1);
+                    ServerConfig.getInstance().addClientAmount(1);
                     Logger.info(" ");
                     Logger.info("客户端IP" + clientSocket.getInetAddress() + " 已成功连接！");
-                    Logger.info("当前已连接的客户端数量: " + Server.getServer().getClientAmount());
+                    Logger.info("当前已连接的客户端数量: " + ServerConfig.getInstance().getClientAmount());
 
                     // 处理连接，分配线程给客户端连接后处理
                     threadPool.submit(new ClientHandler(clientSocket));

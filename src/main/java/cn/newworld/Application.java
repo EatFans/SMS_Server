@@ -10,7 +10,8 @@ import cn.newworld.controller.SocketConnectionHandler;
 import cn.newworld.file.ApplicationConfig;
 import cn.newworld.file.FileManager;
 import cn.newworld.file.ResourceYamlConfiguration;
-import cn.newworld.model.dao.Server;
+import cn.newworld.model.dao.MysqlConfig;
+import cn.newworld.model.dao.ServerConfig;
 import cn.newworld.util.Logger;
 
 import java.io.IOException;
@@ -79,7 +80,8 @@ public class Application {
     public static void initData(){
         scanner = new Scanner(System.in);
         commandManager = new CommandManager();
-        Server.getServer().load();
+        ServerConfig.getInstance().load();
+        MysqlConfig.getInstance().load();
     }
 
     /**
@@ -109,13 +111,13 @@ public class Application {
         initResource();
         initData();
 
-        int port = Server.getServer().getPort();
+        int port = ServerConfig.getInstance().getPort();
         Logger.info("服务端即将开放端口 "+port+" 用于连接...");
 
         initCommand();
         initEventExecutor();
 
-
+        // TODO: 加载插件补丁，插件补丁用于各种事件指令重写，等等操作
 
         try {
             // 连接监听线程
@@ -123,7 +125,6 @@ public class Application {
             Thread connectionHandlerThread = new Thread(socketConnectionHandler);
             connectionHandlerThread.start();
 
-            // TODO: 加载插件补丁单独一个线程与主线程分开，对插件补丁进行加载并循环使用监听
 
             // TODO: 主循环逻辑代码，命令模块、指令监听模块
             while (!isShutdownRequested()) {
