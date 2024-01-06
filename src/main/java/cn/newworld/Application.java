@@ -59,10 +59,6 @@ public class Application {
             // TODO: 加载插件补丁单独一个线程与主线程分开，对插件补丁进行加载并循环使用监听
 
 
-            // 测试
-            //test();
-
-
             // 程序主循环
             while (!isShutdownRequested()) {
                 // TODO: 主循环逻辑代码，用于对业务逻辑的处理
