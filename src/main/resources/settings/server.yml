@@ -1,7 +1,7 @@
 # 服务端开放的端口
 server_port: 8585
-# 验证密钥
-verification_key: "831c3a4940369d2020436162b88ced14b25c5d28548664047ebf5db523cd700e"
+# 验证密钥密码
+keystore_password: "newworldstudio"
 # 最大连接数
 connection_max: 10
 # 设置连接超时时间 (单位：毫秒，5000毫秒 = 5秒)

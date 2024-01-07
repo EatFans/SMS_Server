@@ -6,6 +6,7 @@ import cn.newworld.command.executor.ExitCommand;
 import cn.newworld.command.executor.HelpCommand;
 import cn.newworld.command.executor.ListCommand;
 import cn.newworld.command.executor.ReloadCommand;
+import cn.newworld.controller.SSLSocketConnectionHandler;
 import cn.newworld.controller.SocketConnectionHandler;
 import cn.newworld.file.ApplicationConfig;
 import cn.newworld.file.FileManager;
@@ -70,7 +71,7 @@ public class Application {
      * 初始化创建文件目录
      */
     public static void initDirection(){
-        String[] directoriesToCreate = {"data","logs","plugins"};
+        String[] directoriesToCreate = {"data","logs","plugins","keystore"};
         FileManager.createDirectory(directoriesToCreate);
     }
 
@@ -122,6 +123,7 @@ public class Application {
         try {
             // 连接监听线程
             SocketConnectionHandler socketConnectionHandler = new SocketConnectionHandler(port);
+//            SSLSocketConnectionHandler sslSocketConnectionHandler = new SSLSocketConnectionHandler(port);
             Thread connectionHandlerThread = new Thread(socketConnectionHandler);
             connectionHandlerThread.start();
 

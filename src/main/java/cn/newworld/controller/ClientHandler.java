@@ -33,20 +33,14 @@ public class ClientHandler implements Runnable{
     public void run(){
         // 客户端连接后的逻辑
         try{
-            // 初始化心跳系统
-            Heartbeat heartbeat = new Heartbeat(clientSocket, ServerConfig.getInstance().getHeartbeatInterval());
-
 
             InputStream inputStream = clientSocket.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
+            while (reader.readLine() != null){
 
-            do {
-                Logger.info("密钥验证通过，已经成功连接...");
-                heartbeat.sendHeartbeat();  // 发送心跳检查数据包
-                this.flag = heartbeat.receiveHeartbeat();  // 获取心跳检查数据包反应
 
-            } while (flag);
+            }
 
 
         } catch (IOException e){

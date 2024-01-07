@@ -12,6 +12,7 @@ public class ServerConfig {
     private int heartbeatInterval;
     private int clientAmount;
     private int timeout;
+    private String keystorePassword;
     private static ServerConfig instance;
 
     /**
@@ -35,6 +36,7 @@ public class ServerConfig {
             this.heartbeatInterval = yamlConfiguration.getInt("heartbeat_interval");
             this.clientAmount = 0;
             this.timeout = yamlConfiguration.getInt("timeout");
+            this.keystorePassword = yamlConfiguration.getString("keystore_password");
         } catch (Exception e){
             Logger.error(e.getMessage());
         }
@@ -122,9 +124,13 @@ public class ServerConfig {
 
     /**
      * 获取连接超时时间
-     * @return
+     * @return 获取超时时间
      */
     public int getTimeout(){
         return timeout;
+    }
+
+    public String getKeystorePassword(){
+        return keystorePassword;
     }
 }
