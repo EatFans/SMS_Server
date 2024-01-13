@@ -3,7 +3,7 @@
  */
 package cn.newworld.command.executor;
 
-import cn.newworld.Application;
+import cn.newworld.Server;
 import cn.newworld.command.CommandExecutor;
 import cn.newworld.util.Logger;
 
@@ -13,7 +13,7 @@ public class ExitCommand implements CommandExecutor {
         if (command.equalsIgnoreCase("exit")){
             if (args.length == 1){
                 Logger.info("服务端正在关闭中...");
-                Application.requestShutdown();
+                Server.requestShutdown();
                 return true;
             }
 

@@ -6,7 +6,6 @@ import cn.newworld.command.executor.ExitCommand;
 import cn.newworld.command.executor.HelpCommand;
 import cn.newworld.command.executor.ListCommand;
 import cn.newworld.command.executor.ReloadCommand;
-import cn.newworld.controller.SSLSocketConnectionHandler;
 import cn.newworld.controller.SocketConnectionHandler;
 import cn.newworld.file.ApplicationConfig;
 import cn.newworld.file.FileManager;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class Application {
+public class Server {
     private static volatile boolean shutdownRequested = false; // 标志用于通知线程退出
 
     private static Scanner scanner;

@@ -3,7 +3,7 @@
  */
 package cn.newworld.controller;
 
-import cn.newworld.Application;
+import cn.newworld.Server;
 import cn.newworld.model.dao.ServerConfig;
 import cn.newworld.util.Logger;
 
@@ -40,7 +40,7 @@ public class SocketConnectionHandler implements Runnable {
             Logger.info("服务器已开放端口: " + serverSocket.getLocalPort());
             Logger.info("已经连接的客户端数量："+ ServerConfig.getInstance().getClientAmount());
             serverSocket.setSoTimeout(5000); // 设置超时时间为5秒
-            while (!Application.isShutdownRequested()) {
+            while (!Server.isShutdownRequested()) {
                 try {
                     Socket clientSocket = serverSocket.accept();
                     ServerConfig.getInstance().addClientAmount(1);
