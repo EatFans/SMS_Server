@@ -1,4 +1,4 @@
-package cn.newworld.event.EventHandler;
+package cn.newworld.event;
 
 public enum EventPriority {
     LOWEST(0),
