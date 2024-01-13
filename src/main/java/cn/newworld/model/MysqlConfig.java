@@ -1,4 +1,4 @@
-package cn.newworld.model.dao;
+package cn.newworld.model;
 
 import cn.newworld.file.YamlConfiguration;
 import cn.newworld.util.Logger;

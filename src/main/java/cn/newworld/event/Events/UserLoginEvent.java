@@ -3,11 +3,11 @@
  */
 package cn.newworld.event.Events;
 
-import cn.newworld.model.entity.User;
+import cn.newworld.model.User;
 
-public abstract class UserEvent extends Event {
+public abstract class UserLoginEvent extends Event {
     protected User user;
-    public UserEvent(User user){
+    public UserLoginEvent(User user){
         this.user = user;
     }
 

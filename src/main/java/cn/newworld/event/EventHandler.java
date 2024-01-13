@@ -1,4 +1,4 @@
-package cn.newworld.annotations;
+package cn.newworld.event;
 
 import cn.newworld.event.EventHandler.EventPriority;
 

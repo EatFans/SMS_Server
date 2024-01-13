@@ -11,8 +11,8 @@ import cn.newworld.event.EventsManager;
 import cn.newworld.file.ApplicationConfig;
 import cn.newworld.file.FileManager;
 import cn.newworld.file.ResourceYamlConfiguration;
-import cn.newworld.model.dao.MysqlConfig;
-import cn.newworld.model.dao.ServerConfig;
+import cn.newworld.model.MysqlConfig;
+import cn.newworld.model.ServerConfig;
 import cn.newworld.util.Logger;
 
 import java.io.IOException;

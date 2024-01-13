@@ -1,5 +1,5 @@
 //
-package cn.newworld.model.entity;
+package cn.newworld.model;
 
 
 public class User {

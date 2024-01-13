@@ -3,6 +3,11 @@
  */
 package cn.newworld.event;
 
+import cn.newworld.event.Events.Event;
+import cn.newworld.util.Logger;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,5 +39,32 @@ public class EventsManager {
      */
     public void close(){
         listeners.clear();
+    }
+
+    /**
+     * 触发、执行某个事件
+     * @param event 事件
+     */
+    public void callEvent(Event event){
+        // 遍历所有已经注册的事件监听器
+        for (Listener listener : listeners){
+            Class<?> listenerClass = listener.getClass();
+            for (Method method : listenerClass.getDeclaredMethods()){
+                // 检查方法是否带有 @EventHandler 注解
+                if (method.isAnnotationPresent(EventHandler.class)){
+                    // 检查方法的参数是否符合类型
+                    if (method.getParameterTypes().
+                            length == 1 && method.
+                            getParameterTypes()[0].
+                            equals(event.getClass())){
+                        try {
+                            method.invoke(listener, event);
+                        } catch (IllegalAccessException | InvocationTargetException e){
+                            Logger.error(e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
     }
 }

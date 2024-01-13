@@ -1,7 +1,7 @@
 package cn.newworld.controller;
 
 import cn.newworld.Server;
-import cn.newworld.model.dao.ServerConfig;
+import cn.newworld.model.ServerConfig;
 import cn.newworld.util.Logger;
 
 import javax.net.ssl.KeyManagerFactory;

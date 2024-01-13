@@ -1,7 +1,7 @@
 package cn.newworld.command.executor;
 
 import cn.newworld.command.CommandExecutor;
-import cn.newworld.model.dao.ServerConfig;
+import cn.newworld.model.ServerConfig;
 import cn.newworld.util.Logger;
 
 public class ListCommand implements CommandExecutor {
