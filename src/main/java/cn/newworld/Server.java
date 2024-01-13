@@ -7,6 +7,7 @@ import cn.newworld.command.executor.HelpCommand;
 import cn.newworld.command.executor.ListCommand;
 import cn.newworld.command.executor.ReloadCommand;
 import cn.newworld.controller.SocketConnectionHandler;
+import cn.newworld.event.EventsManager;
 import cn.newworld.file.ApplicationConfig;
 import cn.newworld.file.FileManager;
 import cn.newworld.file.ResourceYamlConfiguration;
@@ -25,6 +26,8 @@ public class Server {
     private static Scanner scanner;
 
     private static CommandManager commandManager;
+
+    private static EventsManager eventsManager;
 
     /**
      * 请求关闭线程
@@ -73,13 +76,13 @@ public class Server {
         String[] directoriesToCreate = {"data","logs","plugins","keystore"};
         FileManager.createDirectory(directoriesToCreate);
     }
-
     /**
      * 初始化对象、加载数据
      */
     public static void initData(){
         scanner = new Scanner(System.in);
         commandManager = new CommandManager();
+        eventsManager = new EventsManager();
         ServerConfig.getInstance().load();
         MysqlConfig.getInstance().load();
     }
@@ -122,12 +125,10 @@ public class Server {
         try {
             // 连接监听线程
             SocketConnectionHandler socketConnectionHandler = new SocketConnectionHandler(port);
-//            SSLSocketConnectionHandler sslSocketConnectionHandler = new SSLSocketConnectionHandler(port);
             Thread connectionHandlerThread = new Thread(socketConnectionHandler);
             connectionHandlerThread.start();
 
-
-            // TODO: 主循环逻辑代码，命令模块、指令监听模块
+            // TODO: 主循环逻辑代码，命令模块、事件监听模块
             while (!isShutdownRequested()) {
                 String userInput = scanner.nextLine();
                 String[] command = userInput.split(" ");
@@ -145,6 +146,7 @@ public class Server {
 
 
 
+
                 if (shutdownRequested)
                     break;
 
@@ -152,8 +154,11 @@ public class Server {
             // 释放资源，保存数据
             Logger.info("[ 命令模块 ] 已经关闭.");
             Logger.info("[ 日志模块 ] 已经关闭.");
-            Logger.close();
+            Logger.info("[ 事件模块 ] 已经关闭.");
             scanner.close();
+            commandManager.close();
+            eventsManager.close();
+            Logger.close();
 
             // 释放线程
             connectionHandlerThread.join();

@@ -5,11 +5,11 @@
  */
 package cn.newworld.event;
 
-public enum Event {
+public enum EventType {
     UserLoginInEvent("UserLoginInEvent"),
     UserRegistrationEvent("UserRegistrationEvent");
     private final String eventName;
-    private Event(String EventName){
+    private EventType(String EventName){
         this.eventName = EventName;
     }
     public String getEventName(){

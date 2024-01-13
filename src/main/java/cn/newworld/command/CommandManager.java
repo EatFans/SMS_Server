@@ -27,4 +27,8 @@ public class CommandManager {
         return commandExecutorMap;
     }
 
+    public void close(){
+        commandExecutorMap.clear();
+    }
+
 }
