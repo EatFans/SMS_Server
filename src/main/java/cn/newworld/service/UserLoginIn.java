@@ -6,7 +6,7 @@ import cn.newworld.event.Listener;
 
 public class UserLoginIn implements Listener {
     @EventHandler
-    public void on(UserLoginEvent event){
+    public void onUserLoginIn(UserLoginEvent event){
 
     }
 }

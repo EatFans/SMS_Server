@@ -1,5 +1,6 @@
 package cn.newworld.command.executor;
 
+import cn.newworld.Server;
 import cn.newworld.command.CommandExecutor;
 import cn.newworld.util.Logger;
 
@@ -11,9 +12,12 @@ public class ReloadCommand implements CommandExecutor {
                 Logger.info("请检查用法格式！ \"reload [参数]\"");
             }
             if (args.length == 2){
-                Logger.info("未开发！");
-                // TODO: 重载指令
-
+                if (args[1].equals("config")){
+                    Server.loadConfig();
+                    Logger.info("配置文件已经重载完毕！");
+                    return true;
+                }
+                Logger.warning("错误参数！");
             }
             if (args.length > 2){
                 Logger.info("请检查用法格式！ \"reload [参数]\"");

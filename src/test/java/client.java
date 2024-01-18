@@ -9,7 +9,7 @@ public class client {
         try (Socket socket = new Socket(server_host,server_port)){
             System.out.println("服务器已经连接！");
 
-            boolean flag = true;
+            boolean flag = false;
             while (flag){
 
 

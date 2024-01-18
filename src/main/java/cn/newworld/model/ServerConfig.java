@@ -8,9 +8,8 @@ import cn.newworld.util.Logger;
 
 public class ServerConfig {
     private int port;
-    private int connectionMax;
+    private int threadPoolAmount;
     private int heartbeatInterval;
-    private int clientAmount;
     private int timeout;
     private String keystorePassword;
     private static ServerConfig instance;
@@ -32,9 +31,8 @@ public class ServerConfig {
         try {
             YamlConfiguration yamlConfiguration = new YamlConfiguration("server.yml");
             this.port = yamlConfiguration.getInt("server_port");
-            this.connectionMax = yamlConfiguration.getInt("connection_max");
+            this.threadPoolAmount = yamlConfiguration.getInt("thread_pool");
             this.heartbeatInterval = yamlConfiguration.getInt("heartbeat_interval");
-            this.clientAmount = 0;
             this.timeout = yamlConfiguration.getInt("timeout");
             this.keystorePassword = yamlConfiguration.getString("keystore_password");
         } catch (Exception e){
@@ -42,90 +40,35 @@ public class ServerConfig {
         }
     }
 
-    /**
-     * 获取Server数据对象模型中的端口数据
-     * @return 返回整数类型
-     */
+
     public int getPort(){
         return port;
     }
 
-    /**
-     * 设置Server数据对象模型中的端口数据
-     * @param port 整数类型端口
-     */
+
     public void setPort(int port){
         this.port = port;
     }
 
-    /**
-     * 获取Server数据对象模型中的最大连接数据
-     * @return 返回整数类型
-     */
-    public int getConnectionMax(){
-        return connectionMax;
+    public int getThreadPoolAmount(){
+        return threadPoolAmount;
     }
 
-    /**
-     * 设置Server数据对象模型中的最大连接数据
-     * @param connectionMax 整数类型
-     */
-    public void setConnectionMax(int connectionMax){
-        this.connectionMax = connectionMax;
+
+    public void setThreadPoolAmount(int threadPoolAmount){
+        this.threadPoolAmount = threadPoolAmount;
     }
 
-    /**
-     * 获取Server数据对象模型中的心跳间隔数据
-     * @return 返回整数类型（单位：毫秒）
-     */
+
     public int getHeartbeatInterval(){
         return heartbeatInterval;
     }
 
-    /**
-     * 设置Server数据对象模型中心跳间隔数值
-     * @param heartbeatInterval 整数类型
-     */
+
     public void setHeartbeatInterval(int heartbeatInterval){
         this.heartbeatInterval = heartbeatInterval;
     }
 
-    /**
-     * 获取已经连接的客户端数量
-     * @return 返回客户端数量
-     */
-    public int getClientAmount(){
-        return clientAmount;
-    }
-
-    /**
-     * 设置已经连接的客户端数量
-     * @param clientAmount 已经连接的客户端数量
-     */
-    public void setClientAmount(int clientAmount){
-        this.clientAmount = clientAmount;
-    }
-
-    /**
-     * 添加已经连接的客户端数量
-     * @param amount 被加的数量
-     */
-    public void addClientAmount(int amount){
-        this.clientAmount = this.clientAmount + amount;
-    }
-
-    /**
-     * 减少已经连接的客户端的数量
-     * @param amount 被减去的数量
-     */
-    public void reduceClientAmount(int amount){
-        this.clientAmount = this.clientAmount - amount;
-    }
-
-    /**
-     * 获取连接超时时间
-     * @return 获取超时时间
-     */
     public int getTimeout(){
         return timeout;
     }

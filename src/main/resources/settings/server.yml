@@ -2,8 +2,10 @@
 server_port: 8585
 # 验证密钥密码
 keystore_password: "newworldstudio"
-# 最大连接数
-connection_max: 10
+# 处理业务的最大线程数量
+thread_pool: 20
+
+
 # 设置连接超时时间 (单位：毫秒，5000毫秒 = 5秒)
 timeout: 5000
 # 心跳间隔 3秒

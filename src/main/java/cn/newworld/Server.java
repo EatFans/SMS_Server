@@ -4,23 +4,26 @@ import cn.newworld.command.CommandExecutor;
 import cn.newworld.command.CommandManager;
 import cn.newworld.command.executor.ExitCommand;
 import cn.newworld.command.executor.HelpCommand;
-import cn.newworld.command.executor.ListCommand;
 import cn.newworld.command.executor.ReloadCommand;
-import cn.newworld.controller.SocketConnectionHandler;
+import cn.newworld.command.executor.WhitelistCommand;
+import cn.newworld.controller.ConnectHandler;
 import cn.newworld.event.EventsManager;
 import cn.newworld.file.ApplicationConfig;
 import cn.newworld.file.FileManager;
-import cn.newworld.file.ResourceYamlConfiguration;
 import cn.newworld.model.MysqlConfig;
 import cn.newworld.model.ServerConfig;
+import cn.newworld.model.Whitelist;
+import cn.newworld.service.UserLoginIn;
 import cn.newworld.util.Logger;
+import cn.newworld.util.ThreadList;
 
-import java.io.IOException;
-import java.util.List;
+
 import java.util.Map;
 import java.util.Scanner;
 
+
 public class Server {
+    private  static ThreadList threadList;
     private static volatile boolean shutdownRequested = false; // 标志用于通知线程退出
 
     private static Scanner scanner;
@@ -67,44 +70,101 @@ public class Server {
         }
         FileManager.extractFile("server.yml","/settings/");
         FileManager.extractFile("mysql.yml","/settings/");
+        FileManager.extractFile("whitelist.yml","/settings/");
     }
 
     /**
      * 初始化创建文件目录
      */
-    public static void initDirection(){
-        String[] directoriesToCreate = {"data","logs","plugins","keystore"};
+    private static void initDirection(){
+        String[] directoriesToCreate = {"data","logs","plugins"};
         FileManager.createDirectory(directoriesToCreate);
     }
     /**
      * 初始化对象、加载数据
      */
-    public static void initData(){
+    private static void initData(){
         scanner = new Scanner(System.in);
         commandManager = new CommandManager();
         eventsManager = new EventsManager();
-        ServerConfig.getInstance().load();
-        MysqlConfig.getInstance().load();
+        threadList = new ThreadList();
+        loadConfig();
     }
 
     /**
      * 注册命令
      */
-    public static void initCommand(){
+    private static void initCommand(){
         commandManager.registerCommandExecutor("exit",new ExitCommand());
         commandManager.registerCommandExecutor("help",new HelpCommand());
-        commandManager.registerCommandExecutor("list",new ListCommand());
         commandManager.registerCommandExecutor("reload",new ReloadCommand());
+        commandManager.registerCommandExecutor("whitelist",new WhitelistCommand());
         Logger.info("默认命令全部注册成功！");
     }
 
     /**
      * 注册事件
      */
-    public static void initEventExecutor(){
-
+    private static void initEventExecutor(){
+        eventsManager.registerEventHandler(new UserLoginIn());
         Logger.info("默认事件全部注册成功！");
     }
+
+    /**
+     * 加载插件
+     */
+    private  static void loadPlugin(){
+
+    }
+
+    /**
+     * 主循环中命令的处理
+     */
+    private static void processCommand(){
+        String userInput = scanner.nextLine();
+        String[] command = userInput.split(" ");
+        String commandName = command[0].toLowerCase();
+        Map<String, CommandExecutor> commandExecutorMap = commandManager.getCommandExecutor();
+        CommandExecutor commandExecutor = commandManager.
+                getCommandExecutor().
+                getOrDefault(commandName,commandExecutorMap.get(commandName));
+        if (commandExecutor != null){
+            if (!commandExecutor.onCommand(commandName,command))
+                Logger.warning("命令未执行成功！");
+        } else {
+            Logger.warning("未注册 "+ commandName+ " 命令! 请检查后重试！");
+        }
+    }
+
+
+    /**
+     * 服务器关闭逻辑处理
+     */
+    private static void closeServer(){
+        // 释放资源，保存数据
+        Logger.info("[ 命令模块 ] 已经关闭.");
+        Logger.info("[ 日志模块 ] 已经关闭.");
+        Logger.info("[ 事件模块 ] 已经关闭.");
+
+        // 关闭线程
+        ConnectHandler.requestShutdown();
+        threadList.closeAllThread();
+
+        scanner.close();
+        commandManager.close();
+        eventsManager.close();
+        Logger.close();
+    }
+
+    /**
+     * 加载配置文件数据
+     */
+    public static void loadConfig(){
+        ServerConfig.getInstance().load();
+        MysqlConfig.getInstance().load();
+        Whitelist.getInstance().load();
+    }
+
 
     public static void main(String[] args) {
         // 初始化
@@ -113,68 +173,24 @@ public class Server {
         Runtime.getRuntime().addShutdownHook(new Thread(Logger::close)); // 注册自动关闭日志系统并保存日志信息
         initResource();
         initData();
-
-        int port = ServerConfig.getInstance().getPort();
-        Logger.info("服务端即将开放端口 "+port+" 用于连接...");
-
         initCommand();
         initEventExecutor();
 
         // TODO: 加载插件补丁，插件补丁用于各种事件指令重写，等等操作
+        loadPlugin();
 
-        try {
-            // 连接监听线程
-            SocketConnectionHandler socketConnectionHandler = new SocketConnectionHandler(port);
-            Thread connectionHandlerThread = new Thread(socketConnectionHandler);
-            connectionHandlerThread.start();
+        threadList.addRunnable(new ConnectHandler());
+        threadList.startAllThread();
+        // TODO: 主循环逻辑代码，命令模块、事件监听模块
+        while (!isShutdownRequested()) {
 
-            // TODO: 主循环逻辑代码，命令模块、事件监听模块
-            while (!isShutdownRequested()) {
-                String userInput = scanner.nextLine();
-                String[] command = userInput.split(" ");
-                String commandName = command[0].toLowerCase();
-                Map<String, CommandExecutor> commandExecutorMap = commandManager.getCommandExecutor();
-                CommandExecutor commandExecutor = commandManager.
-                        getCommandExecutor().
-                        getOrDefault(commandName,commandExecutorMap.get(commandName));
-                if (commandExecutor != null){
-                    if (!commandExecutor.onCommand(commandName,command))
-                        Logger.warning("命令未执行成功！");
-                } else {
-                    Logger.warning("未注册 "+ commandName+ " 命令! 请检查后重试！");
-                }
+            processCommand();
 
-
-
-
-                if (shutdownRequested)
-                    break;
-
-            }
-            // 释放资源，保存数据
-            Logger.info("[ 命令模块 ] 已经关闭.");
-            Logger.info("[ 日志模块 ] 已经关闭.");
-            Logger.info("[ 事件模块 ] 已经关闭.");
-            scanner.close();
-            commandManager.close();
-            eventsManager.close();
-            Logger.close();
-
-            // 释放线程
-            connectionHandlerThread.join();
-        } catch (IOException | InterruptedException e){
-            Logger.error(e.getMessage());
+            if (shutdownRequested)
+                break;
         }
+        closeServer();
 
     }
 
-    /**
-     * 用测试功能的方法
-     */
-    public static void test(){
-        ResourceYamlConfiguration resourceYamlConfiguration = ResourceYamlConfiguration.getResourceYamlConfiguration("lang/zh-CN.yml");
-        List<String> test = resourceYamlConfiguration.getStringList("test");
-        for (String string : test)
-            Logger.info(string);
-    }
 }
