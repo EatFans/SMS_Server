@@ -89,6 +89,7 @@ public class Server {
         eventsManager = new EventsManager();
         threadList = new ThreadList();
         loadConfig();
+        Logger.info("数据初始化完毕.");
     }
 
     /**
@@ -115,6 +116,7 @@ public class Server {
      */
     private  static void loadPlugin(){
 
+        Logger.info("插件加载完毕.");
     }
 
     /**

@@ -74,12 +74,12 @@ public class ConnectHandler implements Runnable {
         // 检查客户端IP是否在白名单中
         if (isInWhitelist(clientIP)){
             socketChannel.register(key.selector(),SelectionKey.OP_READ);
-            Logger.info(socketChannel.getRemoteAddress()+" connects to the server.");
+            Logger.info(socketChannel.getRemoteAddress()+" sends request.");
         } else {
             // 不在白名单，拒绝连接响应
             Logger.warning(clientIP+" has refused the connection！");
             socketChannel.close();
-            key.cancel();
+
         }
 
 
@@ -97,7 +97,7 @@ public class ConnectHandler implements Runnable {
 
         int bytesRead = socketChannel.read(buffer);
         if (bytesRead == -1) {
-            Logger.info(socketChannel.getRemoteAddress() + " disconnected.");
+            Logger.info(socketChannel.getRemoteAddress() + " has returned a response.");
             socketChannel.close();
             key.cancel();
 
@@ -108,9 +108,12 @@ public class ConnectHandler implements Runnable {
             buffer.get(data);
             String requestMessage = new String(data, StandardCharsets.UTF_8);  // 客户端的请求消息
 
+
+
+
             String responseMessage = "HTTP/1.1 200 OK\r\n\r\n{\n" +
-                    "  \"username\": \"user123\",\n" +
-                    "  \"password\": \"secretPassword123\"\n" +
+                    "  \"username\": \"3821032810\",\n" +
+                    "  \"password\": \"s321321321321\"\n" +
                     "  \"test\": \"Hello World\"\n" +
                     "}";
             socketChannel.write(ByteBuffer.wrap(responseMessage.getBytes(StandardCharsets.UTF_8)));
