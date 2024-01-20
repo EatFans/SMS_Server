@@ -3,6 +3,8 @@
  */
 package cn.newworld.command;
 
+import cn.newworld.command.CommandExecutor;
+
 import java.util.HashMap;
 import java.util.Map;
 

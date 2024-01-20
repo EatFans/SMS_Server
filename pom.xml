@@ -45,6 +45,13 @@
             <version>1.6.2</version>
         </dependency>
 
+        <!-- Reflections Java反射库 -->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+        </dependency>
+
 
     </dependencies>
 

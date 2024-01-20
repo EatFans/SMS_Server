@@ -125,6 +125,9 @@ public class Server {
     private static void processCommand(){
         String userInput = scanner.nextLine();
         String[] command = userInput.split(" ");
+        if (command.length < 1){
+            return;
+        }
         String commandName = command[0].toLowerCase();
         Map<String, CommandExecutor> commandExecutorMap = commandManager.getCommandExecutor();
         CommandExecutor commandExecutor = commandManager.

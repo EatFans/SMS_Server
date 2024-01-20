@@ -3,7 +3,9 @@
  */
 package cn.newworld.event;
 
+import cn.newworld.event.EventHandler;
 import cn.newworld.event.Events.Event;
+import cn.newworld.event.Listener;
 import cn.newworld.util.Logger;
 
 import java.lang.reflect.InvocationTargetException;
