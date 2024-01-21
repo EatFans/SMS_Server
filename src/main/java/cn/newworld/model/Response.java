@@ -6,5 +6,13 @@
 package cn.newworld.model;
 
 public class Response {
+    private final String response;
+    public Response(String result){
+        this.response = result;
+    }
+
+    public String getResponseBody(){
+        return "HTTP/1.1 200 OK\r\n\r\n" + response;
+    }
 
 }

@@ -7,6 +7,8 @@ import cn.newworld.command.executor.HelpCommand;
 import cn.newworld.command.executor.ReloadCommand;
 import cn.newworld.command.executor.WhitelistCommand;
 import cn.newworld.controller.ConnectHandler;
+import cn.newworld.controller.ProcessorManager;
+import cn.newworld.controller.processor.v1.UsersProcessor;
 import cn.newworld.event.EventsManager;
 import cn.newworld.file.ApplicationConfig;
 import cn.newworld.file.FileManager;
@@ -27,10 +29,6 @@ public class Server {
     private static volatile boolean shutdownRequested = false; // 标志用于通知线程退出
 
     private static Scanner scanner;
-
-    private static CommandManager commandManager;
-
-    private static EventsManager eventsManager;
 
     /**
      * 请求关闭线程
@@ -71,6 +69,7 @@ public class Server {
         FileManager.extractFile("server.yml","/settings/");
         FileManager.extractFile("mysql.yml","/settings/");
         FileManager.extractFile("whitelist.yml","/settings/");
+        FileManager.extractFile("Start.exe","/bin/");
     }
 
     /**
@@ -85,8 +84,6 @@ public class Server {
      */
     private static void initData(){
         scanner = new Scanner(System.in);
-        commandManager = new CommandManager();
-        eventsManager = new EventsManager();
         threadList = new ThreadList();
         loadConfig();
         Logger.info("数据初始化完毕.");
@@ -96,10 +93,10 @@ public class Server {
      * 注册命令
      */
     private static void initCommand(){
-        commandManager.registerCommandExecutor("exit",new ExitCommand());
-        commandManager.registerCommandExecutor("help",new HelpCommand());
-        commandManager.registerCommandExecutor("reload",new ReloadCommand());
-        commandManager.registerCommandExecutor("whitelist",new WhitelistCommand());
+        CommandManager.registerCommandExecutor("exit",new ExitCommand());
+        CommandManager.registerCommandExecutor("help",new HelpCommand());
+        CommandManager.registerCommandExecutor("reload",new ReloadCommand());
+        CommandManager.registerCommandExecutor("whitelist",new WhitelistCommand());
         Logger.info("默认命令全部注册成功！");
     }
 
@@ -107,8 +104,14 @@ public class Server {
      * 注册事件
      */
     private static void initEventExecutor(){
-        eventsManager.registerEventHandler(new UserLoginIn());
+        EventsManager.registerEventHandler(new UserLoginIn());
         Logger.info("默认事件全部注册成功！");
+    }
+
+    private static void initProcessor(){
+        ProcessorManager.registerProcessor(new UsersProcessor());
+
+        Logger.info("默认请求处理器全部注册完成！");
     }
 
     /**
@@ -129,8 +132,8 @@ public class Server {
             return;
         }
         String commandName = command[0].toLowerCase();
-        Map<String, CommandExecutor> commandExecutorMap = commandManager.getCommandExecutor();
-        CommandExecutor commandExecutor = commandManager.
+        Map<String, CommandExecutor> commandExecutorMap = CommandManager.getCommandExecutor();
+        CommandExecutor commandExecutor = CommandManager.
                 getCommandExecutor().
                 getOrDefault(commandName,commandExecutorMap.get(commandName));
         if (commandExecutor != null){
@@ -156,8 +159,9 @@ public class Server {
         threadList.closeAllThread();
 
         scanner.close();
-        commandManager.close();
-        eventsManager.close();
+        CommandManager.close();
+        EventsManager.close();
+        ProcessorManager.close();
         Logger.close();
     }
 
@@ -170,6 +174,9 @@ public class Server {
         Whitelist.getInstance().load();
     }
 
+    private static void test(){
+
+    }
 
     public static void main(String[] args) {
         // 初始化
@@ -180,6 +187,8 @@ public class Server {
         initData();
         initCommand();
         initEventExecutor();
+        initProcessor();
+
 
         // TODO: 加载插件补丁，插件补丁用于各种事件指令重写，等等操作
         loadPlugin();

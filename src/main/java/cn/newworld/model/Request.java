@@ -1,29 +1,42 @@
 /**
- * 请求
- * 本类是用于客户端与服务端数据信息交流的数据模型对象类
- * 本类，用于客户端发送的数据，json数据解析为本类对象，即为请求对象，
- * 然后将本来对象数据进行进一步的调用
+ * 请求数据模型，用于解析http传输的请求数据解析
  */
 package cn.newworld.model;
 
-import cn.newworld.event.EventType;
 
 public class Request {
+    private final String[] requestLines;
+    private final String[] requestLineParts;
+    private final String requestMessageBody;
 
-    private String eventName;
-    private EventType eventType;
-    public Request(String jsonString){
+    public Request(String requestMessage){
+        String[] cacheString = requestMessage.split("\r\n");
+        this.requestLines = cacheString;
+        this.requestLineParts = cacheString[0].split(" ");
 
-
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean bodyStarted = false;
+        for (String line : requestLines){
+            if (bodyStarted){
+                stringBuilder.append(line).append("\r\n");
+            }
+            if (line.isEmpty()){
+                bodyStarted = true;
+            }
+        }
+        this.requestMessageBody = stringBuilder.toString();
     }
 
-    public String getEventName(){
-        return eventName;
+    public String getUrl(){
+        return requestLineParts[1];
     }
 
-    public EventType eventType(){
-      return eventType;
+    public String getRequestType(){
+        return requestLineParts[0];
     }
 
+    public String getRequestMessageBody(){
+        return requestMessageBody;
+    }
 }
 

@@ -9,27 +9,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CommandManager {
-    private final Map<String, CommandExecutor> commandExecutorMap;
+    private static final Map<String, CommandExecutor> commandExecutorMap = new HashMap<>();
 
-    public CommandManager(){
-        this.commandExecutorMap = new HashMap<>();
 
-    }
 
     /**
      * 注册命令
      * @param commandName 主命令的名称
      * @param commandExecutor 命令执行器的类对象，要继承CommandExecutor接口
      */
-    public void registerCommandExecutor(String commandName,CommandExecutor commandExecutor){
+    public static void registerCommandExecutor(String commandName,CommandExecutor commandExecutor){
         commandExecutorMap.put(commandName,commandExecutor);
     }
 
-    public Map<String, CommandExecutor> getCommandExecutor(){
+    public static Map<String, CommandExecutor> getCommandExecutor(){
         return commandExecutorMap;
     }
 
-    public void close(){
+    public static void close(){
         commandExecutorMap.clear();
     }
 

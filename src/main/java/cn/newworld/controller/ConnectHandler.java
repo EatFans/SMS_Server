@@ -1,11 +1,15 @@
 package cn.newworld.controller;
 
+import cn.newworld.controller.processor.v1.UsersProcessor;
+import cn.newworld.model.Request;
+import cn.newworld.model.Response;
 import cn.newworld.model.ServerConfig;
 import cn.newworld.model.Whitelist;
 import cn.newworld.util.Logger;
 import org.reflections.Reflections;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -115,8 +119,7 @@ public class ConnectHandler implements Runnable {
         int bytesRead = socketChannel.read(buffer);
         if (bytesRead == -1) {
             Logger.info(socketChannel.getRemoteAddress() + " disconnected.");
-            socketChannel.close();
-            key.cancel();
+            close(socketChannel,key);
 
         }
         if (bytesRead > 0){
@@ -124,71 +127,59 @@ public class ConnectHandler implements Runnable {
             byte[] data = new byte[buffer.remaining()];
             buffer.get(data);
             String requestMessage = new String(data, StandardCharsets.UTF_8);  // 客户端的请求消息
-            /*
-            * 从 requestMessage 中解析客户端发送的http请求，变成数组转化成每行，储存在requestLines字符串数组中。
-            * 从 requestLines 数组中取出第一行，即HTTP请求消息的起始行，然后再次使用空格进行分割，得到新的字符串数组 requestLineParts，里面包含请求方法、请求路径等
-            *
-            * */
-            String[] requestLines = requestMessage.split("\r\n");
-            String[] requestLineParts = requestLines[0].split(" ");
+            Request request = new Request(requestMessage);
 
-            String requestMethod = requestLineParts[0];    // 客户端HTTP请求的方法
-            String urlPath = requestLineParts[1];   // 客户端HTTP请求的url路径
+            String requestType = request.getRequestType();    // 客户端HTTP请求的方法
+            String requestUrl = request.getUrl();   // 客户端HTTP请求的url路径
+            String requestMessageBody = request.getRequestMessageBody();  // 客户端HTTP请求的消息体
 
-            if (urlPath.equals("/favicon.ico")){
-                socketChannel.close();
-                key.cancel();
+            if (requestUrl.equals("/favicon.ico")){
+                close(socketChannel,key);
                 return;
             }
-            Logger.info("Request source: "+socketChannel.getRemoteAddress()+" | Request type: "+requestMethod+ " | Request url: "+urlPath);
+            Logger.info("Request source: "+socketChannel.getRemoteAddress()+" | Request type: "+requestType+ " | Request url: "+requestUrl);
 
-            String basePackage = "cn.newworld.controller.processor.v1";
-            Reflections reflections = new Reflections(basePackage);
-            Set<Method> methods = reflections.getMethodsAnnotatedWith(RequestMapping.class);
-            for (Method method : methods){
-                if (method.getReturnType() == String.class){
-                    // TODO: 检查请求的url与处理器注解的url是否一致，如果有相同的，就对应处理，没有就直接忽视
+            List<Processor> processorList = ProcessorManager.getProcessors();
+            for (Processor processor : processorList){
+                Class<? extends Processor> processorClass = processor.getClass();
+                Method[] methods = processorClass.getDeclaredMethods();
+                for (Method method : methods){
+                    if (method.isAnnotationPresent(RequestMapping.class)){
+                        if (method.getReturnType() == String.class){
+                            Class<?>[] parameterTypes = method.getParameterTypes();
+                            for (Class<?> parameterType : parameterTypes){
+                                if (parameterType == String.class){
+                                    RequestMapping annotation = method.getAnnotation(RequestMapping.class);
+                                    String methodWithUrl = annotation.requestUrl();
+                                    String methodWithRequestType = annotation.requestType().getToString();
+                                    if (methodWithUrl.equals(requestUrl) && methodWithRequestType.equals(requestType)){
+                                        try {
+                                            String result = (String) method.invoke(processor,requestMessageBody);
+
+                                            Response response = new Response(result);
+                                            socketChannel.write(ByteBuffer.wrap(response.getResponseBody().getBytes(StandardCharsets.UTF_8)));
+                                            Logger.info(socketChannel.getRemoteAddress() + " has returned a response.");
+                                            close(socketChannel,key);
+
+                                        } catch (Exception e){
+                                            Logger.error(e.getMessage());
+
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
-
-            // 检查客户端请求的是不是/api这个url，如果不是就直接断开连接，是就响应responseMessage
-            switch (urlPath){
-                case "/v1/login":
-                    processLoginUrlRequest(socketChannel,key);
-                    break;
-                case "/v1/send":
-                    processSendUrlRequest(socketChannel,key);
-                    break;
-                default:
-                    socketChannel.close();
-                    key.cancel();
-                    break;
-            }
-
-
-
+            close(socketChannel,key);
         }
     }
 
-    private void processLoginUrlRequest(SocketChannel socketChannel,SelectionKey key) throws IOException{
-        String responseMessage = "HTTP/1.1 200 OK\r\n\r\n{\n" +
-                "    \"action\": \"userLogin\",\n" +
-                "    \"data\": {\n" +
-                "        \"name\": \"testMan\",\n" +
-                "        \"password\": \"123456\",\n" +
-                "        \"token\": \"32feq13\"\n" +
-                "    }\n" +
-                "}";
-        socketChannel.write(ByteBuffer.wrap(responseMessage.getBytes(StandardCharsets.UTF_8)));
-        Logger.info(socketChannel.getRemoteAddress() + " has returned a response.");
+    private void close(SocketChannel socketChannel, SelectionKey key) throws IOException{
         socketChannel.close();
         key.cancel();
-
     }
-
-    private void processSendUrlRequest(SocketChannel socketChannel,SelectionKey key) throws IOException {
-
-    }
-
 }
