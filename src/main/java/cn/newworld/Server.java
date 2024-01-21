@@ -8,7 +8,7 @@ import cn.newworld.command.executor.ReloadCommand;
 import cn.newworld.command.executor.WhitelistCommand;
 import cn.newworld.controller.ConnectHandler;
 import cn.newworld.controller.ProcessorManager;
-import cn.newworld.controller.processor.v1.UsersProcessor;
+import cn.newworld.controller.processor.v1.AuthProcessor;
 import cn.newworld.event.EventsManager;
 import cn.newworld.file.ApplicationConfig;
 import cn.newworld.file.FileManager;
@@ -109,7 +109,7 @@ public class Server {
     }
 
     private static void initProcessor(){
-        ProcessorManager.registerProcessor(new UsersProcessor());
+        ProcessorManager.registerProcessor(new AuthProcessor());
 
         Logger.info("默认请求处理器全部注册完成！");
     }

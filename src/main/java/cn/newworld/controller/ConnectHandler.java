@@ -1,15 +1,12 @@
 package cn.newworld.controller;
 
-import cn.newworld.controller.processor.v1.UsersProcessor;
 import cn.newworld.model.Request;
 import cn.newworld.model.Response;
 import cn.newworld.model.ServerConfig;
 import cn.newworld.model.Whitelist;
 import cn.newworld.util.Logger;
-import org.reflections.Reflections;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -155,11 +152,12 @@ public class ConnectHandler implements Runnable {
                                     if (methodWithUrl.equals(requestUrl) && methodWithRequestType.equals(requestType)){
                                         try {
                                             String result = (String) method.invoke(processor,requestMessageBody);
-
-                                            Response response = new Response(result);
-                                            socketChannel.write(ByteBuffer.wrap(response.getResponseBody().getBytes(StandardCharsets.UTF_8)));
-                                            Logger.info(socketChannel.getRemoteAddress() + " has returned a response.");
-                                            close(socketChannel,key);
+                                            if (result != null){
+                                                Response response = new Response(result);
+                                                socketChannel.write(ByteBuffer.wrap(response.getResponseBody().getBytes(StandardCharsets.UTF_8)));
+                                                Logger.info(socketChannel.getRemoteAddress() + " has returned a response.");
+                                                close(socketChannel,key);
+                                            }
 
                                         } catch (Exception e){
                                             Logger.error(e.getMessage());

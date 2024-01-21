@@ -5,15 +5,13 @@ import cn.newworld.controller.RequestMapping;
 import cn.newworld.controller.RequestType;
 import cn.newworld.util.Logger;
 
-public class UsersProcessor implements Processor {
-    private final String URL = "/v1/users";
+public class AuthProcessor implements Processor {
+    private final String URL = "/v1/auth";
 
-    @RequestMapping(requestUrl = URL, requestType = RequestType.GET)
+    @RequestMapping(requestUrl = URL+"/login", requestType = RequestType.GET)
     public String userLogin(String requestBody){
-        Logger.info("客户端正在调用用户登录的api接口中...");
-        Logger.info(requestBody);
-        Logger.info("正在处理用户登录....");
-        Logger.info("处理成功！用户成功登录！");
+        // TODO: 处理用户登录
+
         String test = "{\n" +
                 "    \"action\": \"userLogin\",\n" +
                 "    \"data\": {\n" +
@@ -26,9 +24,16 @@ public class UsersProcessor implements Processor {
         return test;
     }
 
-    @RequestMapping(requestUrl = "/v1/login", requestType = RequestType.GET)
-    public String login(String requestBody){
+    @RequestMapping(requestUrl = URL+"/register", requestType = RequestType.GET)
+    public String register(String requestBody){
+        // TODO: 处理用户注册
 
         return "Hello World";
+    }
+
+    @RequestMapping(requestUrl = URL+"/null",requestType = RequestType.GET)
+    public String testNull(String requestBody){
+        Logger.info("测试返回响应值为null，是否直接关闭连接，不给予响应");
+        return null;
     }
 }
