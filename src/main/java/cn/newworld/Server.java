@@ -49,6 +49,12 @@ public class Server {
      * 初始化资源
      */
     public static void initResource(){
+        Logger.info(" _   _              __        __         _     _ ____  _             _ _       ");
+        Logger.info("| \\ | | _____      _\\ \\      / /__  _ __| | __| / ___|| |_ _   _  __| (_) ___  ");
+        Logger.info("|  \\| |/ _ \\ \\ /\\ / /\\ \\ /\\ / / _ \\| '__| |/ _` \\___ \\| __| | | |/ _` | |/ _ \\ ");
+        Logger.info("| |\\  |  __/\\ V  V /  \\ V  V / (_) | |  | | (_| |___) | |_| |_| | (_| | | (_) |");
+        Logger.info("|_| \\_|\\___| \\_/\\_/    \\_/\\_/ \\___/|_|  |_|\\__,_|____/ \\__|\\__,_|\\__,_|_|\\___/ ");
+        Logger.info("                                                                               ");
         FileManager.extractFile("application.properties");
         ApplicationConfig applicationConfig = ApplicationConfig.getInstance();
         Logger.info("------------------------------------------------------------------");

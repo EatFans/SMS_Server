@@ -1,7 +1,6 @@
 package cn.newworld.controller;
 
 import cn.newworld.http.RequestEntity;
-import cn.newworld.model.Request;
 import cn.newworld.model.ServerConfig;
 import cn.newworld.model.Whitelist;
 import cn.newworld.util.Logger;
@@ -16,7 +15,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -160,6 +158,8 @@ public class ConnectHandler implements Runnable {
                                                 // 请求处理结束时间戳
                                                 long afterTime = Tool.getTimestamp();
                                                 Logger.info("[ "+socketChannel.getRemoteAddress() + " ] Returned a response in "+ (afterTime-beforeTime) + " ms");
+                                                close(socketChannel,key);
+                                            } else {
                                                 close(socketChannel,key);
                                             }
 

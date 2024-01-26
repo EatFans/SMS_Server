@@ -59,6 +59,7 @@ public class AuthProcessor implements Processor {
         String name = queryParams.get("name");
         if (name == null){
             Logger.info("请求的参数为空");
+            return null;
         }
         return ResponseEntity.createResponse()
                 .setStatus(HttpStatus.OK.getCode())
