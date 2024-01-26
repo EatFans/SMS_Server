@@ -1,7 +1,6 @@
 package cn.newworld.controller;
 
 import cn.newworld.model.Request;
-import cn.newworld.model.Response;
 import cn.newworld.model.ServerConfig;
 import cn.newworld.model.Whitelist;
 import cn.newworld.util.Logger;
@@ -153,8 +152,7 @@ public class ConnectHandler implements Runnable {
                                         try {
                                             String result = (String) method.invoke(processor,requestMessageBody);
                                             if (result != null){
-                                                Response response = new Response(result);
-                                                socketChannel.write(ByteBuffer.wrap(response.getResponseBody().getBytes(StandardCharsets.UTF_8)));
+                                                socketChannel.write(ByteBuffer.wrap(result.getBytes(StandardCharsets.UTF_8)));
                                                 Logger.info(socketChannel.getRemoteAddress() + " has returned a response.");
                                                 close(socketChannel,key);
                                             }
