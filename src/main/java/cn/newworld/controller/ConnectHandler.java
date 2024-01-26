@@ -1,9 +1,11 @@
 package cn.newworld.controller;
 
+import cn.newworld.http.RequestEntity;
 import cn.newworld.model.Request;
 import cn.newworld.model.ServerConfig;
 import cn.newworld.model.Whitelist;
 import cn.newworld.util.Logger;
+import cn.newworld.util.Tool;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -14,6 +16,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -123,18 +126,19 @@ public class ConnectHandler implements Runnable {
             byte[] data = new byte[buffer.remaining()];
             buffer.get(data);
             String requestMessage = new String(data, StandardCharsets.UTF_8);  // 客户端的请求消息
-            Request request = new Request(requestMessage);
+            RequestEntity requestEntity = new RequestEntity(requestMessage);
 
-            String requestType = request.getRequestType();    // 客户端HTTP请求的方法
-            String requestUrl = request.getUrl();   // 客户端HTTP请求的url路径
-            String requestMessageBody = request.getRequestMessageBody();  // 客户端HTTP请求的消息体
+            String requestType = requestEntity.getRequestType();    // 客户端HTTP请求的方法
+            String requestUrl = requestEntity.getUrl().split("\\?")[0];   // 客户端HTTP请求的url路径
+
+            // 请求处理开始之前时间戳
+            long beforeTime = Tool.getTimestamp();
 
             if (requestUrl.equals("/favicon.ico")){
                 close(socketChannel,key);
                 return;
             }
-            Logger.info("Request source: "+socketChannel.getRemoteAddress()+" | Request type: "+requestType+ " | Request url: "+requestUrl);
-
+            Logger.info("Source: "+socketChannel.getRemoteAddress()+" | Type: "+requestType+ " | URL: "+requestUrl);
             List<Processor> processorList = ProcessorManager.getProcessors();
             for (Processor processor : processorList){
                 Class<? extends Processor> processorClass = processor.getClass();
@@ -144,16 +148,18 @@ public class ConnectHandler implements Runnable {
                         if (method.getReturnType() == String.class){
                             Class<?>[] parameterTypes = method.getParameterTypes();
                             for (Class<?> parameterType : parameterTypes){
-                                if (parameterType == String.class){
+                                if (parameterType == RequestEntity.class){  // 检查方法参数是否为RequestEntity
                                     RequestMapping annotation = method.getAnnotation(RequestMapping.class);
                                     String methodWithUrl = annotation.requestUrl();
                                     String methodWithRequestType = annotation.requestType().getToString();
                                     if (methodWithUrl.equals(requestUrl) && methodWithRequestType.equals(requestType)){
                                         try {
-                                            String result = (String) method.invoke(processor,requestMessageBody);
+                                            String result = (String) method.invoke(processor,requestEntity);
                                             if (result != null){
                                                 socketChannel.write(ByteBuffer.wrap(result.getBytes(StandardCharsets.UTF_8)));
-                                                Logger.info(socketChannel.getRemoteAddress() + " has returned a response.");
+                                                // 请求处理结束时间戳
+                                                long afterTime = Tool.getTimestamp();
+                                                Logger.info("[ "+socketChannel.getRemoteAddress() + " ] Returned a response in "+ (afterTime-beforeTime) + " ms");
                                                 close(socketChannel,key);
                                             }
 
@@ -178,4 +184,5 @@ public class ConnectHandler implements Runnable {
         socketChannel.close();
         key.cancel();
     }
+
 }

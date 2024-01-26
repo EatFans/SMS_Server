@@ -5,8 +5,8 @@ package cn.newworld.model;
 
 
 public class Request {
-    private final String[] requestLines;
-    private final String[] requestLineParts;
+    private final String[] requestLines;  // 请求中的每一行
+    private final String[] requestLineParts;  // 请求行元素
     private final String requestMessageBody;
 
     public Request(String requestMessage){
