@@ -1,6 +1,9 @@
-package cn.newworld.controller;
+package cn.newworld.core;
 
-import cn.newworld.http.RequestEntity;
+import cn.newworld.controller.Processor;
+import cn.newworld.controller.ProcessorManager;
+import cn.newworld.http.RequestMapping;
+import cn.newworld.http.model.Request;
 import cn.newworld.model.ServerConfig;
 import cn.newworld.model.Whitelist;
 import cn.newworld.util.Logger;
@@ -124,10 +127,10 @@ public class ConnectHandler implements Runnable {
             byte[] data = new byte[buffer.remaining()];
             buffer.get(data);
             String requestMessage = new String(data, StandardCharsets.UTF_8);  // 客户端的请求消息
-            RequestEntity requestEntity = new RequestEntity(requestMessage);
+            Request request = new Request(requestMessage);
 
-            String requestType = requestEntity.getRequestType();    // 客户端HTTP请求的方法
-            String requestUrl = requestEntity.getUrl().split("\\?")[0];   // 客户端HTTP请求的url路径
+            String requestType = request.getRequestType();    // 客户端HTTP请求的方法
+            String requestUrl = request.getUrl().split("\\?")[0];   // 客户端HTTP请求的url路径
 
             // 请求处理开始之前时间戳
             long beforeTime = Tool.getTimestamp();
@@ -146,13 +149,13 @@ public class ConnectHandler implements Runnable {
                         if (method.getReturnType() == String.class){
                             Class<?>[] parameterTypes = method.getParameterTypes();
                             for (Class<?> parameterType : parameterTypes){
-                                if (parameterType == RequestEntity.class){  // 检查方法参数是否为RequestEntity
+                                if (parameterType == Request.class){  // 检查方法参数是否为RequestEntity
                                     RequestMapping annotation = method.getAnnotation(RequestMapping.class);
                                     String methodWithUrl = annotation.requestUrl();
                                     String methodWithRequestType = annotation.requestType().getToString();
                                     if (methodWithUrl.equals(requestUrl) && methodWithRequestType.equals(requestType)){
                                         try {
-                                            String result = (String) method.invoke(processor,requestEntity);
+                                            String result = (String) method.invoke(processor, request);
                                             if (result != null){
                                                 socketChannel.write(ByteBuffer.wrap(result.getBytes(StandardCharsets.UTF_8)));
                                                 // 请求处理结束时间戳

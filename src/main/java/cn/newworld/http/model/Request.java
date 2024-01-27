@@ -1,4 +1,4 @@
-package cn.newworld.http;
+package cn.newworld.http.model;
 
 import cn.newworld.util.Logger;
 
@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * 本类为请求数据模型实体对象，用于将客户端的请求消息解析，并获取解析完毕的必要数据信息
  */
-public class RequestEntity {
+public class Request {
     private final String[] requestLines;      // 请求的每一行
     private final String[] requestLineParts;    // 请求行中的元素
     private final String requestBody;       // 请求体
@@ -21,7 +21,7 @@ public class RequestEntity {
      * 构造方法，初始化开始解析 requestMessage 请求消息
      * @param requestMessage 请求消息
      */
-    public RequestEntity(String requestMessage){
+    public Request(String requestMessage){
         String[] cacheString = requestMessage.split("\r\n");
         this.requestLines = cacheString;
         this.requestLineParts = cacheString[0].split(" ");

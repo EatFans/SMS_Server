@@ -1,7 +1,8 @@
 /**
  * 该类为响应映射注解，用于映射处理请求URL
  */
-package cn.newworld.controller;
+package cn.newworld.http;
+
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

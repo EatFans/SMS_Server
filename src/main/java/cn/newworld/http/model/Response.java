@@ -1,18 +1,20 @@
-package cn.newworld.http;
+package cn.newworld.http.model;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 响应消息实体类，用于创建初始化设置响应消息
  */
-public class ResponseEntity {
+public class Response {
     private int status;     // 响应状态码
     private String reasonPhrase;    // 描述状态码的短语
     private final Map<String,String> responseHeaders = new HashMap<>();  // 响应头
     private  String body;    // 响应体
 
-    private ResponseEntity(){
+
+    private Response(){
 
     }
 
@@ -20,8 +22,8 @@ public class ResponseEntity {
      * 创建 Response 响应
      * @return Response 实例对象
      */
-    public static ResponseEntity createResponse(){
-        return new ResponseEntity();
+    public static Response createResponse(){
+        return new Response();
     }
 
     /**
@@ -29,7 +31,7 @@ public class ResponseEntity {
      * @param code 状态码
      * @return Response 实例
      */
-    public ResponseEntity setStatus(int code){
+    public Response setStatus(int code){
         this.status = code;
         return this;
     }
@@ -39,7 +41,7 @@ public class ResponseEntity {
      * @param reasonPhrase 状态码短语
      * @return Response 实例
      */
-    public ResponseEntity setReasonPhrase(String reasonPhrase){
+    public Response setReasonPhrase(String reasonPhrase){
         this.reasonPhrase = reasonPhrase;
         return this;
     }
@@ -50,7 +52,7 @@ public class ResponseEntity {
      * @param content 响应头内容
      * @return Response 实例
      */
-    public ResponseEntity addHeader(String headerName, String content){
+    public Response addHeader(String headerName, String content){
         this.responseHeaders.put(headerName,content);
         return this;
     }
@@ -60,8 +62,13 @@ public class ResponseEntity {
      * @param body 响应体
      * @return Response 实例
      */
-    public ResponseEntity setBody(String body){
+    public Response setBody(String body){
         this.body = body;
+        return this;
+    }
+
+    public Response setBody(byte[] body){
+        this.body = new String(body, StandardCharsets.UTF_8);
         return this;
     }
 
@@ -74,6 +81,7 @@ public class ResponseEntity {
             status = 200;
             reasonPhrase = "OK";
         }
+        responseHeaders.computeIfAbsent("Content-Length", k -> String.valueOf(body.length()));
 
         String statusLine = "HTTP/1.1 " + status + " " + reasonPhrase + "\r\n";
 

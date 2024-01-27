@@ -2,7 +2,7 @@
  * 文件创建类，用于各种文件创建提取等操作的管理类
  * @author EatFan
  */
-package cn.newworld.file;
+package cn.newworld.io;
 
 import cn.newworld.Server;
 import cn.newworld.util.Logger;

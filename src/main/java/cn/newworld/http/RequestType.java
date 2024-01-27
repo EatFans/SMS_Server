@@ -3,7 +3,7 @@
  * 用于枚举各种http请求类型，
  * 其每个类型对应着它的String字符串
  */
-package cn.newworld.controller;
+package cn.newworld.http;
 
 public enum RequestType {
     GET("GET"),

@@ -12,6 +12,7 @@ public class ContentType {
     public static final String TEXT_PLAIN = "text/plain";
     // XML格式
     public static final String TEXT_XML = "text/xml";
+    public static final String TEXT_CSS = "text/css";
     // gif图片格式
     public static final String IMAGE_GIF = "image/gif";
     // jpg图片格式

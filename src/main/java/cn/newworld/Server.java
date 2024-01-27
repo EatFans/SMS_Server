@@ -6,16 +6,15 @@ import cn.newworld.command.executor.ExitCommand;
 import cn.newworld.command.executor.HelpCommand;
 import cn.newworld.command.executor.ReloadCommand;
 import cn.newworld.command.executor.WhitelistCommand;
-import cn.newworld.controller.ConnectHandler;
+import cn.newworld.core.ConnectHandler;
 import cn.newworld.controller.ProcessorManager;
 import cn.newworld.controller.processor.v1.AuthProcessor;
 import cn.newworld.event.EventsManager;
-import cn.newworld.file.ApplicationConfig;
-import cn.newworld.file.FileManager;
+import cn.newworld.io.ApplicationConfig;
+import cn.newworld.io.FileManager;
 import cn.newworld.model.MysqlConfig;
 import cn.newworld.model.ServerConfig;
 import cn.newworld.model.Whitelist;
-import cn.newworld.service.UserLoginIn;
 import cn.newworld.util.Logger;
 import cn.newworld.util.ThreadList;
 
@@ -110,7 +109,7 @@ public class Server {
      * 注册事件
      */
     private static void initEventExecutor(){
-        EventsManager.registerEventHandler(new UserLoginIn());
+
         Logger.info("默认事件全部注册成功！");
     }
 
@@ -180,9 +179,6 @@ public class Server {
         Whitelist.getInstance().load();
     }
 
-    private static void test(){
-
-    }
 
     public static void main(String[] args) {
         // 初始化

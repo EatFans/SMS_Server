@@ -2,7 +2,7 @@
  * 服务器配置文件类，该类用于读取application.properties配置文件，并保存调用数据
  * @author EatFan
  */
-package cn.newworld.file;
+package cn.newworld.io;
 
 import cn.newworld.util.Logger;
 
