@@ -58,7 +58,8 @@ public class ConnectHandler implements Runnable {
                 }
             }
         } catch (IOException e) {
-            Logger.error("ConnectHandler 中出现错误: " + e.getMessage());
+            Logger.error("ConnectHandler 中出现错误: IOException occurred");
+            e.printStackTrace();  // 输出详细的堆栈跟踪信息
             System.exit(-1);
         }
     }
@@ -131,15 +132,19 @@ public class ConnectHandler implements Runnable {
 
             String requestType = request.getRequestType();    // 客户端HTTP请求的方法
             String requestUrl = request.getUrl().split("\\?")[0];   // 客户端HTTP请求的url路径
+            String contentType = request.getHeaders().get("application/json");
 
             // 请求处理开始之前时间戳
             long beforeTime = Tool.getTimestamp();
+            Logger.info("========================================================================================");
+            Logger.info("Source: " + socketChannel.getRemoteAddress() + " | Type: " + requestType + " | URL: " + requestUrl);
+            if (contentType == null)
+                Logger.info("Content-Type： null");
+            else
+                Logger.info("Content-Type： " + contentType);
+            if (request.getRequestBody() != null)
+                Logger.info("Content-Length： " + request.getRequestBody().length());
 
-            if (requestUrl.equals("/favicon.ico")){
-                close(socketChannel,key);
-                return;
-            }
-            Logger.info("Source: "+socketChannel.getRemoteAddress()+" | Type: "+requestType+ " | URL: "+requestUrl);
             List<Processor> processorList = ProcessorManager.getProcessors();
             for (Processor processor : processorList){
                 Class<? extends Processor> processorClass = processor.getClass();
@@ -153,20 +158,23 @@ public class ConnectHandler implements Runnable {
                                     RequestMapping annotation = method.getAnnotation(RequestMapping.class);
                                     String methodWithUrl = annotation.requestUrl();
                                     String methodWithRequestType = annotation.requestType().getToString();
-                                    if (methodWithUrl.equals(requestUrl) && methodWithRequestType.equals(requestType)){
+                                    if (methodWithUrl.equals(requestUrl) && methodWithRequestType.equals(requestType)) { // 匹配合适的处理器处理请求
                                         try {
                                             String result = (String) method.invoke(processor, request);
-                                            if (result != null){
+                                            // 请求处理结束时间戳
+                                            long afterTime = Tool.getTimestamp();
+
+                                            Logger.info("Processing time： " + (afterTime - beforeTime) + "ms");
+                                            if (result != null) {
                                                 socketChannel.write(ByteBuffer.wrap(result.getBytes(StandardCharsets.UTF_8)));
-                                                // 请求处理结束时间戳
-                                                long afterTime = Tool.getTimestamp();
-                                                Logger.info("[ "+socketChannel.getRemoteAddress() + " ] Returned a response in "+ (afterTime-beforeTime) + " ms");
-                                                close(socketChannel,key);
+                                                Logger.info("Status： Success");
+                                                close(socketChannel, key);
                                             } else {
-                                                close(socketChannel,key);
+                                                Logger.info("Status： Error");
+                                                close(socketChannel, key);
                                             }
 
-                                        } catch (Exception e){
+                                        } catch (Exception e) {
                                             Logger.error(e.getMessage());
 
                                         }
@@ -178,7 +186,6 @@ public class ConnectHandler implements Runnable {
                     }
                 }
             }
-
             close(socketChannel,key);
         }
     }

@@ -7,5 +7,8 @@ import java.util.Map;
  */
 public class Session {
     // 储存会话
+    private int sessionId;  // 会话 id
+
+
 
 }

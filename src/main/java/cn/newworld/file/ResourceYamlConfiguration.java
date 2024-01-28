@@ -1,4 +1,4 @@
-package cn.newworld.io;
+package cn.newworld.file;
 
 import cn.newworld.util.Logger;
 import org.yaml.snakeyaml.Yaml;

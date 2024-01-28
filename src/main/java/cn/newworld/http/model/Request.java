@@ -16,6 +16,7 @@ public class Request {
     private final String[] requestLineParts;    // 请求行中的元素
     private final String requestBody;       // 请求体
     private final Map<String,String> queryParams; // 查询URL中的参数
+    private final Map<String,String> headers;   // 请求头部信息
 
     /**
      * 构造方法，初始化开始解析 requestMessage 请求消息
@@ -25,6 +26,9 @@ public class Request {
         String[] cacheString = requestMessage.split("\r\n");
         this.requestLines = cacheString;
         this.requestLineParts = cacheString[0].split(" ");
+
+        // 解析请求头
+        this.headers = parseHeaders(requestLines);
 
         StringBuilder stringBuilder = new StringBuilder();
         boolean bodyStarted = false;
@@ -45,6 +49,12 @@ public class Request {
         }
     }
 
+    /**
+     * 解析查询参数
+     *
+     * @param queryString 包含查询参数的字符串
+     * @return 包含解析后的键值对的Map
+     */
     private Map<String, String> parseQueryParams(String queryString){
         Map<String, String> params = new HashMap<>();
 
@@ -66,6 +76,33 @@ public class Request {
         }
 
         return params;
+    }
+
+    /**
+     * 解析请求头
+     * @param requestLines 请求的每一行
+     * @return 返回所有的请求头
+     */
+    private Map<String,String> parseHeaders(String[] requestLines){
+        Map<String,String> headers = new HashMap<>();
+        for (int i = 1; i < requestLines.length; i++){
+            String line = requestLines[i];
+            if (line.isEmpty())
+                break;
+            String[] headerParts = line.split(": ");
+            if (headerParts.length == 2)
+                headers.put(headerParts[0],headerParts[1]);
+        }
+        return headers;
+
+    }
+
+    /**
+     * 获取请求头
+     * @return 所有的请求头
+     */
+    public Map<String,String> getHeaders(){
+        return headers;
     }
 
     /**
@@ -99,5 +136,7 @@ public class Request {
     public String getRequestBody(){
         return requestBody;
     }
+
+
 
 }

@@ -6,12 +6,14 @@ import cn.newworld.command.executor.ExitCommand;
 import cn.newworld.command.executor.HelpCommand;
 import cn.newworld.command.executor.ReloadCommand;
 import cn.newworld.command.executor.WhitelistCommand;
+import cn.newworld.controller.processor.v1.OtherProcessor;
+import cn.newworld.controller.processor.v1.TestProcessor;
 import cn.newworld.core.ConnectHandler;
 import cn.newworld.controller.ProcessorManager;
 import cn.newworld.controller.processor.v1.AuthProcessor;
 import cn.newworld.event.EventsManager;
-import cn.newworld.io.ApplicationConfig;
-import cn.newworld.io.FileManager;
+import cn.newworld.file.ApplicationConfig;
+import cn.newworld.file.FileManager;
 import cn.newworld.model.MysqlConfig;
 import cn.newworld.model.ServerConfig;
 import cn.newworld.model.Whitelist;
@@ -115,7 +117,8 @@ public class Server {
 
     private static void initProcessor(){
         ProcessorManager.registerProcessor(new AuthProcessor());
-
+        ProcessorManager.registerProcessor(new TestProcessor());
+        ProcessorManager.registerProcessor(new OtherProcessor());
         Logger.info("默认请求处理器全部注册完成！");
     }
 

@@ -1,7 +1,7 @@
 /**
  * Yaml配置文件类，本类用于读取、写入yml文件数据
  */
-package cn.newworld.io;
+package cn.newworld.file;
 
 
 import cn.newworld.util.Logger;

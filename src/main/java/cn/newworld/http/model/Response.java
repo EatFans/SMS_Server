@@ -31,17 +31,8 @@ public class Response {
      * @param code 状态码
      * @return Response 实例
      */
-    public Response setStatus(int code){
+    public Response setStatus(int code,String reasonPhrase){
         this.status = code;
-        return this;
-    }
-
-    /**
-     * 设置形容状态码的短语
-     * @param reasonPhrase 状态码短语
-     * @return Response 实例
-     */
-    public Response setReasonPhrase(String reasonPhrase){
         this.reasonPhrase = reasonPhrase;
         return this;
     }
